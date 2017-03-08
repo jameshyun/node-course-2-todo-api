@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2",
     "lodash": "^4.17.4",
     "mongodb": "^2.2.24",
-    "yargs": "^7.0.1"
+    "mongoose": "^4.8.6"
   },
   "devDependencies": {},
   "scripts": {
