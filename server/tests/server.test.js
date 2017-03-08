@@ -63,4 +63,6 @@ describe('POST /todos', () => {
    so, done function has to be called then it goes next.
    look at each test case. they must call done at the end
    u have to specify 'done', otherwise not gonna work as expected
+   1. assertions about body
+   2. assertions about collection in db
  */
