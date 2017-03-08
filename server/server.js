@@ -28,10 +28,14 @@ app.listen(3000, () => {
   console.log('Started on port 3000');
 });
 
+module.exports = {app};
 
 
 /**
  * /todos <- resources
+ * bodyParser.json() parse json data frm user into obj
+ * test case 1. valid 2. invalid
+   (expct, mocha, supertest, nodemon)
  *
  * save() returns a Promise
  * JSON.stringify(doc, undefined, 2) is just used to print out pretty
