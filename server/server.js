@@ -1,6 +1,8 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var {ObjectID} = require('mongodb');
+const _ = require('lodash');
+const express = require('express');
+const bodyParser = require('body-parser');
+const {ObjectID} = require('mongodb');
+
 
 var {mongoose} = require('./db/mongoose');
 var {Todo} = require('./models/todo');
@@ -72,6 +74,37 @@ app.delete('/todos/:id', (req, res) => {
   })
 });
 
+
+app.patch('/todos/:id', (req, res) => {
+  var id = req.params.id;
+  var body = _.pick(req.body, ['text', 'completed']);
+
+  if (!ObjectID.isValid(id)) {
+    return res.status(404).send(); // send back an empty body
+  }
+
+  // check if body.completed is boolean && body.completed is true
+  if (_.isBoolean(body.completed) && body.completed) {
+    body.completedAt = new Date().getTime(); // getTime() returns js timestamp num of milliseconds since midnight on jan 1 of year 1970
+  } else {
+    body.completed = false;
+    body.completedAt = null;
+  }
+
+  // we can pass body since is's already generated as obj above
+  // {new: true} - return new obj back. the updated one.
+  Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
+    if (!todo) {
+      res.status(404).send();
+    }
+
+    res.send({todo});
+  }).catch((e) => {
+    res.status(400).send();
+  })
+})
+
+
 app.listen(port, () => {
   console.log(`Started up at port ${port}`);
 });
@@ -90,6 +123,7 @@ module.exports = {app};
  * JSON.stringify(doc, undefined, 2) is just used to print out pretty
  * type casting does exist inside mongoose therefore e.g. if type is String, then
    32 or true can be used. becomes "32", "true"
+ * when patch. be careful about user's inputs. we must update what we need to update only. using lodash pick()
  * Deployment on Heroku:
      process.env.PORT
      "engines": {
