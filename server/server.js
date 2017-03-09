@@ -15,6 +15,7 @@ app.use(bodyParser.json()); // parse application/json
 /**
  * Configure routes
  */
+ /*#################  CREATE ###################################################*/
 app.post('/todos', (req, res) => {
   var todo = new Todo({
     text: req.body.text
@@ -27,7 +28,7 @@ app.post('/todos', (req, res) => {
   });
 })
 
-
+/*#################  GET all ###################################################*/
 app.get('/todos', (req, res) => {
   Todo.find().then((todos) => {
     res.send({todos});
@@ -36,7 +37,7 @@ app.get('/todos', (req, res) => {
   });
 });
 
-
+/*#################  GET with id ###################################################*/
 app.get('/todos/:id', (req, res) => {
   var id = req.params.id;
 
@@ -55,7 +56,7 @@ app.get('/todos/:id', (req, res) => {
   })
 });
 
-
+/*#################  DELETE ###################################################*/
 app.delete('/todos/:id', (req, res) => {
   var id = req.params.id;
 
@@ -74,7 +75,7 @@ app.delete('/todos/:id', (req, res) => {
   })
 });
 
-
+/*#################  PATCH ###################################################*/
 app.patch('/todos/:id', (req, res) => {
   var id = req.params.id;
   var body = _.pick(req.body, ['text', 'completed']);
