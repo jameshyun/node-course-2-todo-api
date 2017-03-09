@@ -66,7 +66,7 @@ app.delete('/todos/:id', (req, res) => {
       return res.status(404).send(); // send back an empty body
     }
 
-    res.send({todo}); // send obj rather than array for more flexibility
+    res.send({todo: todo}); // send obj rather than array for more flexibility
   }).catch((e) => {
     res.status(400).send(e);
   })
