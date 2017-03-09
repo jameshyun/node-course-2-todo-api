@@ -7,7 +7,7 @@ var {Todo} = require('./models/todo');
 var {User} = require('./models/user');
 
 var app = express();
-
+const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json()); // parse application/json
 /**
@@ -54,8 +54,8 @@ app.get('/todos/:id', (req, res) => {
 });
 
 
-app.listen(3000, () => {
-  console.log('Started on port 3000');
+app.listen(port, () => {
+  console.log(`Started up at port ${port}`);
 });
 
 module.exports = {app};
@@ -72,4 +72,11 @@ module.exports = {app};
  * JSON.stringify(doc, undefined, 2) is just used to print out pretty
  * type casting does exist inside mongoose therefore e.g. if type is String, then
    32 or true can be used. becomes "32", "true"
+ * Deployment on Heroku:
+     process.env.PORT
+     "engines": {
+       "node": "6.10.0"
+     },
+     "start": "node server/server.js",
+     process.env.MONGODB_URI
  */
