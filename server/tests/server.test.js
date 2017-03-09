@@ -85,4 +85,7 @@ describe('GET /todos', () => {
    u have to specify 'done', otherwise not gonna work as expected
    1. assertions about body
    2. assertions about collection in db
+ * query data
+   1. find()
+   2.
  */
