@@ -3,12 +3,12 @@ require('./config/config');
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
-const {ObjectID} = require('mongodb');
+const { ObjectID } = require('mongodb');
 
 
-var {mongoose} = require('./db/mongoose');
-var {Todo} = require('./models/todo');
-var {User} = require('./models/user');
+var { mongoose } = require('./db/mongoose');
+var { Todo } = require('./models/todo');
+var { User } = require('./models/user');
 
 var app = express();
 const port = process.env.PORT;
@@ -17,7 +17,7 @@ app.use(bodyParser.json()); // parse application/json
 /**
  * Configure routes
  */
- /*#################  CREATE ###################################################*/
+/*#################  CREATE ###################################################*/
 app.post('/todos', (req, res) => {
   var todo = new Todo({
     text: req.body.text
@@ -33,7 +33,7 @@ app.post('/todos', (req, res) => {
 /*#################  GET all ###################################################*/
 app.get('/todos', (req, res) => {
   Todo.find().then((todos) => {
-    res.send({todos});
+    res.send({ todos });
   }, (e) => {
     res.status(400).send(e);
   });
@@ -52,7 +52,7 @@ app.get('/todos/:id', (req, res) => {
       return res.status(404).send(); // send back an empty body
     }
 
-    res.send({todo}); // send obj rather than array for more flexibility
+    res.send({ todo }); // send obj rather than array for more flexibility
   }).catch((e) => {
     res.status(400).send();
   })
@@ -71,7 +71,7 @@ app.delete('/todos/:id', (req, res) => {
       return res.status(404).send(); // send back an empty body
     }
 
-    res.send({todo: todo}); // send obj rather than array for more flexibility
+    res.send({ todo: todo }); // send obj rather than array for more flexibility
   }).catch((e) => {
     res.status(400).send(e);
   })
@@ -96,23 +96,39 @@ app.patch('/todos/:id', (req, res) => {
 
   // we can pass body since is's already generated as obj above
   // {new: true} - return new obj back. the updated one.
-  Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
+  Todo.findByIdAndUpdate(id, { $set: body }, { new: true }).then((todo) => {
     if (!todo) {
       res.status(404).send();
     }
 
-    res.send({todo});
+    res.send({ todo });
   }).catch((e) => {
     res.status(400).send();
   })
 })
 
 
+// POST /users
+app.post('/users', (req, res) => {
+  var body = _.pick(req.body, ['email', 'password']); // _.pick() to make sure user not to post tokens
+  var user = new User(body);
+  
+  user.save().then(() => {
+    return user.generateAuthToken();
+    // res.send(user);
+  }).then((token) => {
+    res.header('x-auth', token).send(user);
+  }).catch((e) => {
+    res.status(400).send(e);
+  });
+});
+
+
 app.listen(port, () => {
   console.log(`Started up at port ${port}`);
 });
 
-module.exports = {app};
+module.exports = { app };
 
 
 /**
@@ -135,4 +151,9 @@ module.exports = {app};
      "start": "node server/server.js",
      process.env.MONGODB_URI
  * in package.js. export NODE_ENV=test || SET \"NODE_ENV=test\"  && mocha ..... line means run either export or set based on os and chain mocha command to it.
+ *
+ * User.findByToken // model method 
+   user.generateAuthToken // instance method - every instance 
+
+ * header('x-auth') - when prefix x- in header that means we r creating a custom header for specific purpose
  */
