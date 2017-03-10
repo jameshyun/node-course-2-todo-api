@@ -9,6 +9,7 @@ const { ObjectID } = require('mongodb');
 var { mongoose } = require('./db/mongoose');
 var { Todo } = require('./models/todo');
 var { User } = require('./models/user');
+var { authenticate } = require('./middleware/authenticate');
 
 var app = express();
 const port = process.env.PORT;
@@ -78,7 +79,7 @@ app.delete('/todos/:id', (req, res) => {
 });
 
 /*#################  PATCH ###################################################*/
-app.patch('/todos/:id', (req, res) => {
+app.patch('/todos/:id',  (req, res) => {
   var id = req.params.id;
   var body = _.pick(req.body, ['text', 'completed']);
 
@@ -122,6 +123,25 @@ app.post('/users', (req, res) => {
     res.status(400).send(e);
   });
 });
+
+
+
+/*#################  USER ME ###################################################*/
+app.get('/users/me', authenticate, (req, res) => {
+  res.send(req.user);
+  // var token = req.header('x-auth');
+
+  // //model method - find who has specific token
+  // User.findByToken(token).then((user) => {
+  //   if (!user) {
+  //     return Promise.reject(); // this code will automactically stop here and run the error case
+  //   }
+
+  //   res.send(user);
+  // }).catch((e) => {
+  //   res.status(401).send();
+  // });
+})
 
 
 app.listen(port, () => {

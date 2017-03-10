@@ -33,6 +33,7 @@ var UserSchema = new mongoose.Schema({
 });
 
 // update method
+// Instance methods with methods
 // what exactly gets sent back when a mongoose model is converted into a JSON value
 UserSchema.methods.toJSON = function () {
   var user = this;
@@ -41,7 +42,7 @@ UserSchema.methods.toJSON = function () {
   return _.pick(userObject, ['email', '_id']);
 };
 
-// Instance methods
+// Instance methods with methods
 // no arrow function since we need this
 UserSchema.methods.generateAuthToken = function () {
   var user = this;
@@ -52,6 +53,28 @@ UserSchema.methods.generateAuthToken = function () {
 
   return user.save().then(() => { // return promise to be called in the server
     return token;
+  });
+};
+
+// Model methods with statics
+UserSchema.statics.findByToken = function (token) {
+  var User = this;
+  var decoded;
+
+  // if any error happens in try block, try block automatically stop execution and move to catch block and run some code there and continues on with ur program
+  try {
+    decoded = jwt.verify(token, 'abc123')
+  } catch (e) {
+    // return new Promise((resolve, reject) => {
+    //   reject();
+    // })
+    return Promise.reject();// same as above. when u pass an value as param, then caller will use it as 'e' in catch block
+  }
+
+  return User.findOne({
+    '_id': decoded._id,
+    'tokens.token': token, // used '' for key to access object's properties
+    'tokens.access': 'auth'
   });
 };
 
